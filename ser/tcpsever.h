@@ -8,37 +8,36 @@
 using namespace std;
 class Tcpsever
 {
+public:
+	Tcpsever(char *ip, short port, int pth_num);
+	~Tcpsever() {}
+	void run();
+
+	class pipe
+	{
 	public:
-		Tcpsever(char *ip,short port,int pth_num);
-		~Tcpsever(){}
-		void run();
-		
-		class pipe
+		pipe(int err[2])
 		{
-			public:
-			pipe(int err[2])
-			{
-				arr[0] = err[0];
-				arr[1] = err[1];
-			}
-			int arr[2];
-		};
-		
-	private:
-		int _listen_fd;//监听套接字
-		int _pth_num;//启动的线程的个数
-		struct event_base *_base;//libevent
+			arr[0] = err[0];
+			arr[1] = err[1];
+		}
+		int arr[2];
+	};
 
-		vector<pipe> _socket_pair;
-		vector<Pthread*> _pthread;//pthread vector
-		map<int,int> _pth_work_num;//用于和子线程交流的fd+对应子线程监听的个数
+private:
+	int _listen_fd;			  // 监听套接字
+	int _pth_num;			  // 启动的线程的个数
+	struct event_base *_base; // libevent
 
-		void get_sock_pair();
-		void get_pthread();
+	vector<pipe> _socket_pair;
+	vector<Pthread *> _pthread;	 // pthread vector
+	map<int, int> _pth_work_num; // 用于和子线程交流的fd+对应子线程监听的个数
 
+	void get_sock_pair();
+	void get_pthread();
 
-		friend void listen_cb(int fd,short event,void* arg);
-		friend void sock_pair_cb(int fd,short event,void* arg);
+	friend void listen_cb(int fd, short event, void *arg);
+	friend void sock_pair_cb(int fd, short event, void *arg);
 };
 
-#endif 
+#endif
